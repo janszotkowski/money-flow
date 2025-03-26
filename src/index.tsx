@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import './index.css';
 import { routeTree } from './routeTree.gen';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const router = createRouter({ routeTree });
 
@@ -12,6 +14,7 @@ if (!rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <RouterProvider router={router} />
+            <ToastContainer theme={'dark'} />
         </StrictMode>,
     );
 }
