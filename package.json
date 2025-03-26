@@ -12,6 +12,7 @@
     "lint:styles:fix": "stylelint 'src/**/*.{css,scss}' --fix"
   },
   "dependencies": {
+    "@tanstack/react-router": "^1.114.27",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
