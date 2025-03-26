@@ -12,7 +12,7 @@
     "lint:styles:fix": "stylelint 'src/**/*.{css,scss}' --fix"
   },
   "dependencies": {
-    "@tanstack/react-router": "^1.114.27",
+    "@tanstack/react-router": "1.114.27",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
@@ -21,6 +21,8 @@
     "@rsbuild/plugin-react": "1.1.1",
     "@rsbuild/plugin-sass": "1.2.2",
     "@stylistic/eslint-plugin": "4.2.0",
+    "@tanstack/react-router-devtools": "1.114.27",
+    "@tanstack/router-plugin": "1.114.27",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
     "@typescript-eslint/eslint-plugin": "8.28.0",
