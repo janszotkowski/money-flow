@@ -3,6 +3,7 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginSass } from '@rsbuild/plugin-sass';
 import { pluginSvgr } from '@rsbuild/plugin-svgr';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [pluginReact(), pluginSass(), pluginSvgr()],
@@ -17,6 +18,16 @@ export default defineConfig({
       plugins: [
         TanStackRouterRspack({ target: 'react', autoCodeSplitting: true }),
       ],
+    },
+  },
+  source: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    },
+    define: {
+      'process.env.APPWRITE_ENDPOINT': JSON.stringify(process.env.APPWRITE_ENDPOINT),
+      'process.env.APPWRITE_PROJECT_ID': JSON.stringify(process.env.APPWRITE_PROJECT_ID),
+      'process.env.APPWRITE_DATABASE_ID': JSON.stringify(process.env.APPWRITE_DATABASE_ID),
     },
   },
 });
