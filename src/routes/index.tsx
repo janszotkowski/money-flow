@@ -1,12 +1,6 @@
-import React from 'react';
+import { Dashboard } from '@/pages';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
-    component: Index,
+    component: Dashboard,
 });
-
-function Index(): React.ReactElement {
-    return (
-        <div>Hello World</div>
-    );
-}
