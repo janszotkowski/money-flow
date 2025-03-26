@@ -1,9 +1,9 @@
-import { makeAutoObservable } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 import { BaseService } from '@/services/BaseService';
 import { z } from 'zod';
 
 export abstract class BaseListStore<T, CreateT, UpdateT, ResponseSchema extends z.ZodType> {
-    protected items: T[] = [];
+    public items: T[] = [];
     protected total: number = 0;
     protected page: number = 1;
     protected limit: number = 10;
@@ -11,7 +11,24 @@ export abstract class BaseListStore<T, CreateT, UpdateT, ResponseSchema extends 
     protected error: string | null = null;
 
     protected constructor(protected readonly service: BaseService<T, CreateT, UpdateT, ResponseSchema>) {
-        makeAutoObservable(this);
+        makeObservable<any>(this, {
+            items: observable,
+            total: observable,
+            page: observable,
+            limit: observable,
+            isLoading: observable,
+            error: observable,
+            fetchItems: action,
+            createItem: action,
+            updateItem: action,
+            deleteItem: action,
+            setPage: action,
+            setLimit: action,
+            setError: action,
+            setLoading: action,
+            setItems: action,
+            handleError: action,
+        });
     }
 
     public async fetchItems(): Promise<void> {
