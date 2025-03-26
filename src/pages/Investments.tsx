@@ -5,8 +5,38 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Bitcoin, Coins, LineChart, MoreHorizontal, Plus } from 'lucide-react';
 import * as React from 'react';
+import { useStore } from '@/hooks/useStore';
+import { investmentStore } from '@/stores';
+import { Investment } from '@/types/Investment';
+import { Loading } from '@/components/ui/loading';
+import { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 
-export const Investments: React.FC = (): React.ReactElement => {
+const InvestmentsComponent: React.FC = (): React.ReactElement => {
+    const {
+        items: investments,
+        isLoading,
+        error,
+        fetchItems,
+    } = useStore(investmentStore);
+
+    useEffect(() => {
+        console.log('Fetching investments data...');
+        fetchItems().then(() => {
+            console.log('Investments data fetched, items:', investmentStore.getItems());
+        });
+    }, [fetchItems]);
+
+    if (isLoading) {
+        return <Loading fullscreen text={'Načítání investic...'} />;
+    }
+
+    if (error) {
+        return (<div className={'min-h-screen bg-black text-white p-8 flex items-center justify-center'}>Chyba: {error}</div>);
+    }
+
+    console.log('Rendering Investments component with items:', investments);
+
     return (
         <div className={'min-h-screen bg-black text-white p-8'}>
             <div className={'flex justify-between items-center mb-8'}>
@@ -28,86 +58,62 @@ export const Investments: React.FC = (): React.ReactElement => {
             </div>
 
             <div className={'grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'}>
-                <Card className={'bg-zinc-900 border-zinc-800'}>
-                    <CardHeader className={'flex flex-row items-center justify-between space-y-0 pb-2'}>
-                        <CardTitle className={'text-lg'}>XTB Portfolio</CardTitle>
-                        <Button variant={'ghost'} size={'icon'}>
-                            <MoreHorizontal className={'h-4 w-4'} />
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <div className={'flex items-center gap-4 mb-4'}>
-                            <div className={'p-2 bg-blue-500/10 rounded-lg'}>
-                                <LineChart className={'h-6 w-6 text-blue-500'} />
-                            </div>
-                            <div>
-                                <div className={'text-2xl font-bold'}>Akciové portfolio</div>
-                                <div className={'text-sm text-zinc-400'}>XTB</div>
-                            </div>
-                        </div>
-                        <div className={'flex justify-between items-center'}>
-                            <div>
-                                <div className={'text-sm text-zinc-400'}>Hodnota</div>
-                                <div className={'text-xl font-bold'}>234 567 Kč</div>
-                            </div>
-                            <div className={'text-green-500'}>+12.5%</div>
-                        </div>
-                    </CardContent>
-                </Card>
+                {(investments as Investment[]).slice(0, 3).map((investment) => {
+                    // Určení ikony podle typu investice
+                    let Icon = LineChart;
+                    let iconColor = 'text-blue-500';
+                    let bgColor = 'bg-blue-500/10';
 
-                <Card className={'bg-zinc-900 border-zinc-800'}>
-                    <CardHeader className={'flex flex-row items-center justify-between space-y-0 pb-2'}>
-                        <CardTitle className={'text-lg'}>Drahé kovy</CardTitle>
-                        <Button variant={'ghost'} size={'icon'}>
-                            <MoreHorizontal className={'h-4 w-4'} />
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <div className={'flex items-center gap-4 mb-4'}>
-                            <div className={'p-2 bg-yellow-500/10 rounded-lg'}>
-                                <Coins className={'h-6 w-6 text-yellow-500'} />
-                            </div>
-                            <div>
-                                <div className={'text-2xl font-bold'}>Zlato</div>
-                                <div className={'text-sm text-zinc-400'}>Fyzické</div>
-                            </div>
-                        </div>
-                        <div className={'flex justify-between items-center'}>
-                            <div>
-                                <div className={'text-sm text-zinc-400'}>Hodnota</div>
-                                <div className={'text-xl font-bold'}>123 456 Kč</div>
-                            </div>
-                            <div className={'text-green-500'}>+5.2%</div>
-                        </div>
-                    </CardContent>
-                </Card>
+                    if (investment.type === 'crypto') {
+                        Icon = Bitcoin;
+                        iconColor = 'text-orange-500';
+                        bgColor = 'bg-orange-500/10';
+                    } else if (investment.type === 'metals') {
+                        Icon = Coins;
+                        iconColor = 'text-yellow-500';
+                        bgColor = 'bg-yellow-500/10';
+                    }
 
-                <Card className={'bg-zinc-900 border-zinc-800'}>
-                    <CardHeader className={'flex flex-row items-center justify-between space-y-0 pb-2'}>
-                        <CardTitle className={'text-lg'}>Kryptoměny</CardTitle>
-                        <Button variant={'ghost'} size={'icon'}>
-                            <MoreHorizontal className={'h-4 w-4'} />
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <div className={'flex items-center gap-4 mb-4'}>
-                            <div className={'p-2 bg-orange-500/10 rounded-lg'}>
-                                <Bitcoin className={'h-6 w-6 text-orange-500'} />
-                            </div>
-                            <div>
-                                <div className={'text-2xl font-bold'}>Bitcoin</div>
-                                <div className={'text-sm text-zinc-400'}>Binance</div>
-                            </div>
-                        </div>
-                        <div className={'flex justify-between items-center'}>
-                            <div>
-                                <div className={'text-sm text-zinc-400'}>Hodnota</div>
-                                <div className={'text-xl font-bold'}>89 012 Kč</div>
-                            </div>
-                            <div className={'text-red-500'}>-2.1%</div>
-                        </div>
-                    </CardContent>
-                </Card>
+                    return (
+                        <Card key={investment.id} className={'bg-zinc-900 border-zinc-800'}>
+                            <CardHeader className={'flex flex-row items-center justify-between space-y-0 pb-2'}>
+                                <CardTitle className={'text-lg'}>{investment.name}</CardTitle>
+                                <Button variant={'ghost'} size={'icon'}>
+                                    <MoreHorizontal className={'h-4 w-4'} />
+                                </Button>
+                            </CardHeader>
+                            <CardContent>
+                                <div className={'flex items-center gap-4 mb-4'}>
+                                    <div className={`p-2 ${bgColor} rounded-lg`}>
+                                        <Icon className={`h-6 w-6 ${iconColor}`} />
+                                    </div>
+                                    <div>
+                                        <div className={'text-2xl font-bold'}>
+                                            {investment.type === 'stocks' ? 'Akciové portfolio' :
+                                                investment.type === 'crypto' ? 'Kryptoměny' :
+                                                    investment.type === 'metals' ? 'Drahé kovy' : 'Ostatní'}
+                                        </div>
+                                        <div className={'text-sm text-zinc-400'}>{investment.platform}</div>
+                                    </div>
+                                </div>
+                                <div className={'flex justify-between items-center'}>
+                                    <div>
+                                        <div className={'text-sm text-zinc-400'}>Hodnota</div>
+                                        <div className={'text-xl font-bold'}>
+                                            {investment.currentValue.toLocaleString('cs-CZ', {
+                                                style: 'currency',
+                                                currency: 'CZK',
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div className={investment.profitLossPercentage >= 0 ? 'text-green-500' : 'text-red-500'}>
+                                        {investment.profitLossPercentage >= 0 ? '+' : ''}{investment.profitLossPercentage.toFixed(1)}%
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
             <div className={'grid grid-cols-1 md:grid-cols-2 gap-6 mb-8'}>
@@ -192,3 +198,5 @@ export const Investments: React.FC = (): React.ReactElement => {
         </div>
     );
 };
+
+export const Investments = observer(InvestmentsComponent);

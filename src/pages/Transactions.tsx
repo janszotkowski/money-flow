@@ -6,12 +6,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ChevronLeft, ChevronRight, Filter, MoreHorizontal, Plus } from 'lucide-react';
 import * as React from 'react';
+import { useStore } from '@/hooks/useStore';
+import { transactionStore } from '@/stores';
+import { Transaction } from '@/types/Transaction';
+import { Loading } from '@/components/ui/loading';
+import { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 
-export const Transactions: React.FC = (): React.ReactElement => {
+const TransactionsComponent: React.FC = (): React.ReactElement => {
     const [date, setDate] = React.useState<Date>();
     const [type, setType] = React.useState<string>('all');
     const [category, setCategory] = React.useState<string>('all');
     const [account, setAccount] = React.useState<string>('all');
+
+    const {
+        items: transactions,
+        isLoading,
+        error,
+        fetchItems,
+    } = useStore(transactionStore);
+
+    useEffect(() => {
+        console.log('Fetching transactions data...');
+        fetchItems().then(() => {
+            console.log('Transactions data fetched, items:', transactionStore.getItems());
+        });
+    }, [fetchItems]);
+
+    if (isLoading) {
+        return <Loading fullscreen text={'Načítání transakcí...'} />;
+    }
+
+    if (error) {
+        return (<div className={'min-h-screen bg-black text-white p-8 flex items-center justify-center'}>Chyba: {error}</div>);
+    }
 
     return (
         <div className={'min-h-screen bg-black text-white p-8'}>
@@ -169,48 +197,38 @@ export const Transactions: React.FC = (): React.ReactElement => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow className={'border-zinc-800'}>
-                                <TableCell>1. 3. 2024</TableCell>
-                                <TableCell>Plat</TableCell>
-                                <TableCell>Příjem</TableCell>
-                                <TableCell>Hlavní účet</TableCell>
-                                <TableCell className={'text-right text-green-500'}>+45 000 Kč</TableCell>
-                                <TableCell>
-                                    <Button variant={'ghost'} size={'icon'}>
-                                        <MoreHorizontal className={'h-4 w-4'} />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow className={'border-zinc-800'}>
-                                <TableCell>1. 3. 2024</TableCell>
-                                <TableCell>Nákup potravin</TableCell>
-                                <TableCell>Jídlo</TableCell>
-                                <TableCell>Hlavní účet</TableCell>
-                                <TableCell className={'text-right text-red-500'}>-2 345 Kč</TableCell>
-                                <TableCell>
-                                    <Button variant={'ghost'} size={'icon'}>
-                                        <MoreHorizontal className={'h-4 w-4'} />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow className={'border-zinc-800'}>
-                                <TableCell>28. 2. 2024</TableCell>
-                                <TableCell>Převod na spoření</TableCell>
-                                <TableCell>Převod</TableCell>
-                                <TableCell>Spořicí účet</TableCell>
-                                <TableCell className={'text-right text-blue-500'}>-10 000 Kč</TableCell>
-                                <TableCell>
-                                    <Button variant={'ghost'} size={'icon'}>
-                                        <MoreHorizontal className={'h-4 w-4'} />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
+                            {(transactions as Transaction[]).length > 0 ? (
+                                (transactions as Transaction[]).map((transaction) => (
+                                    <TableRow key={transaction.id} className={'border-zinc-800'}>
+                                        <TableCell>{new Date(transaction.date).toLocaleDateString('cs-CZ')}</TableCell>
+                                        <TableCell>{transaction.description}</TableCell>
+                                        <TableCell>{transaction.category}</TableCell>
+                                        <TableCell>{transaction.accountId}</TableCell>
+                                        <TableCell className={`text-right ${transaction.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                                            {transaction.type === 'income' ? '+' : '-'}
+                                            {transaction.amount.toLocaleString('cs-CZ', {
+                                                style: 'currency',
+                                                currency: 'CZK',
+                                            })}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button variant={'ghost'} size={'icon'}>
+                                                <MoreHorizontal className={'h-4 w-4'} />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={6} className={'text-center py-4'}>Žádné transakce k zobrazení</TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
 
                     <div className={'flex items-center justify-between mt-4'}>
                         <div className={'text-sm text-zinc-400'}>
-                            Zobrazeno 1-10 z 50 transakcí
+                            Zobrazeno 1-{Math.min((transactions as Transaction[]).length, 10)} z {(transactions as Transaction[]).length} transakcí
                         </div>
                         <div className={'flex gap-2'}>
                             <Button variant={'outline'} size={'icon'}>
@@ -226,3 +244,5 @@ export const Transactions: React.FC = (): React.ReactElement => {
         </div>
     );
 };
+
+export const Transactions = observer(TransactionsComponent);
