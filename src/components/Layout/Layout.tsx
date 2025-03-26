@@ -5,5 +5,5 @@ type LayoutProps = {
 };
 
 export const Layout: React.FC<LayoutProps> = ({ children }): React.ReactElement => {
-    return <div>{children}</div>;
+    return <div className={'flex h-screen w-screen'}>{children}</div>;
 };
