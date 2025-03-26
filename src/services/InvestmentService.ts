@@ -4,6 +4,6 @@ import { Investment, CreateInvestment, UpdateInvestment, InvestmentListResponseS
 
 export class InvestmentService extends BaseService<Investment, CreateInvestment, UpdateInvestment, typeof InvestmentListResponseSchema> {
     public constructor() {
-        super(databases, 'investments', InvestmentListResponseSchema);
+        super(databases, process.env.APPWRITE_COLLECTION_ID_INVESTMENTS!, InvestmentListResponseSchema);
     }
 };

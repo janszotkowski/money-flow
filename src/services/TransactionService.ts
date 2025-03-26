@@ -4,6 +4,6 @@ import { Transaction, CreateTransaction, UpdateTransaction, TransactionListRespo
 
 export class TransactionService extends BaseService<Transaction, CreateTransaction, UpdateTransaction, typeof TransactionListResponseSchema> {
     public constructor() {
-        super(databases, 'transactions', TransactionListResponseSchema);
+        super(databases, process.env.APPWRITE_COLLECTION_ID_TRANSACTIONS!, TransactionListResponseSchema);
     }
 };

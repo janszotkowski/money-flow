@@ -4,6 +4,6 @@ import { Account, CreateAccount, UpdateAccount, AccountListResponseSchema } from
 
 export class AccountService extends BaseService<Account, CreateAccount, UpdateAccount, typeof AccountListResponseSchema> {
     public constructor() {
-        super(databases, 'accounts', AccountListResponseSchema);
+        super(databases, process.env.APPWRITE_COLLECTION_ID_ACCOUNTS!, AccountListResponseSchema);
     }
 };
