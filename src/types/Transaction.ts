@@ -8,7 +8,7 @@ export const TransactionSchema = BaseEntitySchema.extend({
     description: z.string().min(1),
     date: z.date(),
     category: TransactionCategoryEnum,
-    accountId: z.string().uuid(),
+    accountId: z.string(),
 });
 
 // Create schema
@@ -18,7 +18,7 @@ export const CreateTransactionSchema = z.object({
     description: z.string().min(1),
     date: z.date(),
     category: TransactionCategoryEnum,
-    accountId: z.string().uuid(),
+    accountId: z.string(),
 });
 
 // Update schema
