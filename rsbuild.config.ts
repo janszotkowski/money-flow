@@ -28,6 +28,9 @@ export default defineConfig({
       'process.env.APPWRITE_ENDPOINT': JSON.stringify(process.env.APPWRITE_ENDPOINT),
       'process.env.APPWRITE_PROJECT_ID': JSON.stringify(process.env.APPWRITE_PROJECT_ID),
       'process.env.APPWRITE_DATABASE_ID': JSON.stringify(process.env.APPWRITE_DATABASE_ID),
+      'process.env.APPWRITE_COLLECTION_ID_TRANSACTIONS': JSON.stringify(process.env.APPWRITE_COLLECTION_ID_TRANSACTIONS),
+      'process.env.APPWRITE_COLLECTION_ID_ACCOUNTS': JSON.stringify(process.env.APPWRITE_COLLECTION_ID_ACCOUNTS),
+      'process.env.APPWRITE_COLLECTION_ID_INVESTMENTS': JSON.stringify(process.env.APPWRITE_COLLECTION_ID_INVESTMENTS),
     },
   },
 });
